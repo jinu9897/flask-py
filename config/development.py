@@ -1,5 +1,2 @@
-from . import Config
-
-class DevelopmentConfig(Config):
-    DEBUG = True
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'  # 개발용 SQLite DB
+DEBUG = True
+LOG_DIR = '/path/to/development/logs/'
