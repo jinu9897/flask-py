@@ -1,22 +1,6 @@
-from flask import Flask
-from pybo.views.access import parse_access_log
-from pybo.views.error import parse_error_log
+from pybo import create_app
 
-app = Flask(__name__)
+app = create_app()
 
-@app.route('/')
-def index():
-    return "Log Analysis Server Running"
-
-@app.route('/access')
-def access_logs():
-    parse_access_log()
-    return "Access logs parsed!"
-
-@app.route('/error')
-def error_logs():
-    parse_error_log()
-    return "Error logs parsed!"
-
-if __name__ == "__main__":
-    app.run()
+if __name__ == '__main__':
+    app.run(host='0.0.0.0', port=8052)
