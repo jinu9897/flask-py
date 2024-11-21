@@ -1,5 +1,5 @@
-from config.default import *
+from . import Config
 
-SQLALCHEMY_DATABASE_URI = 'sqlite:///{}'.format(os.path.join(BASE_DIR, 'pybo.db'))
-SQLALCHEMY_TRACK_MODIFICATIONS = False
-SECRET_KEY = "dev"
+class DevelopmentConfig(Config):
+    DEBUG = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///dev.db'  # 개발용 SQLite DB

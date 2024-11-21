@@ -1,40 +1,12 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Log Analysis Dashboard</title>
-    <link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Index Page</title>
 </head>
 <body>
-    <div class="w3-container">
-        <h2>Log Analysis Dashboard</h2>
-
-        <div class="w3-row">
-            <div class="w3-col s12">
-                <h3>Top 10 IP Addresses</h3>
-                <img src="data:image/png;base64, {{ graphs[0] }}" alt="Top 10 IP Addresses">
-            </div>
-        </div>
-
-        <div class="w3-row">
-            <div class="w3-col s12">
-                <h3>Top 10 Requests</h3>
-                <img src="data:image/png;base64, {{ graphs[1] }}" alt="Top 10 Requests">
-            </div>
-        </div>
-
-        <div class="w3-row">
-            <div class="w3-col s12">
-                <h3>Top 10 Referrers</h3>
-                <img src="data:image/png;base64, {{ graphs[2] }}" alt="Top 10 Referrers">
-            </div>
-        </div>
-
-        <div class="w3-row">
-            <div class="w3-col s12">
-                <h3>Requests per Hour</h3>
-                <img src="data:image/png;base64, {{ graphs[3] }}" alt="Requests per Hour">
-            </div>
-        </div>
-    </div>
+    <h1>Welcome to Access Log Analysis</h1>
+    <p><a href="/graph">View Graph</a></p>
 </body>
 </html>
