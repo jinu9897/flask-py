@@ -1,2 +1,0 @@
-127.0.0.1 - - [10/Oct/2024:13:55:36 +0000] "GET /index.html HTTP/1.1" 200 "http://example.com"
-192.168.1.1 - - [10/Oct/2024:14:00:00 +0000] "POST /login HTTP/1.1" 302 "http://example.com/login"

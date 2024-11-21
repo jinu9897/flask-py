@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Log Analysis</title>
+</head>
+<body>
+    <h1>Error Log Analysis</h1>
+
+    <h2>Top 10 IP Addresses</h2>
+    <img src="data:image/png;base64, {{ images['ip'] }}" alt="Top 10 IP Addresses">
+
+    <h2>Top 10 Log Levels</h2>
+    <img src="data:image/png;base64, {{ images['log'] }}" alt="Top 10 Log Levels">
+
+    <h2>Timestamp per Hour</h2>
+    <img src="data:image/png;base64, {{ images['time'] }}" alt="Timestamp per Hour">
+</body>
+</html>
