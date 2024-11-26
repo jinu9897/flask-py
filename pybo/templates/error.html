@@ -7,6 +7,30 @@
 </head>
 <body>
     <h1>Error Log Analysis</h1>
-    <img src="/error/" alt="Error Log Chart">
+
+    <h2>Top 10 IP Addresses</h2>
+    <img src="{{ ip_graph }}" alt="IP Graph">
+
+    <h2>Top 10 Log Levels</h2>
+    <img src="{{ log_graph }}" alt="Log Level Graph">
+
+    <h2>Errors Per Hour</h2>
+    <img src="{{ hourly_graph }}" alt="Hourly Error Graph">
 </body>
 </html>
+
+<!--
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error Log Analysis</title>
+</head>
+<body>
+    <h1>Error Log Analysis</h1>
+    (Base64 이미지를 표시)
+    <img src="{{ graph }}" alt="Error Log Graph">
+</body>
+</html>
+-->

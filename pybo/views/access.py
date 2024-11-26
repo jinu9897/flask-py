@@ -1,22 +1,36 @@
+import matplotlib
+matplotlib.use('Agg')  # 비-GUI 백엔드 설정
+
 import re
 import pandas as pd
 import matplotlib.pyplot as plt
-from flask import Blueprint, render_template, send_file
-from io import BytesIO
+import io
+import base64
+from flask import Blueprint, render_template
 
-bp = Blueprint('access', __name__)
-
+# Blueprint 생성
+bp = Blueprint('access', __name__, url_prefix='/access')
 
 @bp.route('/')
-def parse_access_log():
-    log_file = '/var/log/nginx/access.log'  # 로그 파일 경로
+def access_log():
+    # 로그 파일 경로
+    log_path = 'pybo/log/access.log'
 
-    with open(log_file, 'r') as f:
-        text = f.read()
+    # 로그 파일 읽기
+    try:
+        with open(log_path, 'r') as f:
+            text = f.read()
+    except FileNotFoundError:
+        return "Log file not found."
 
-    # 로그 데이터 추출
+    # 정규식으로 데이터 추출
     pattern = r'([0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}) - - \[(.*?)\] "(.*?)" .* "(.*?)"'
-    remote_hosts, times, requests, referrers = [], [], [], []
+
+    remote_hosts = []
+    times = []
+    requests = []
+    referrers = []
+
     for match in re.finditer(pattern, text):
         remote_hosts.append(match.group(1))
         times.append(match.group(2))
@@ -24,25 +38,67 @@ def parse_access_log():
         referrers.append(match.group(4))
 
     # 데이터프레임 생성
-    df = pd.DataFrame({
-        "IP": remote_hosts,
-        "Time": times,
-        "Request": requests,
-        "Referrer": referrers
-    })
+    data = {"IP": remote_hosts,
+            "Time": times,
+            "Request": requests,
+            "Referrer": referrers}
+    df = pd.DataFrame(data)
 
-    # 시각화: 상위 10개 IP 요청
-    most_ip = df['IP'].value_counts().head(10)
-    fig, ax = plt.subplots()
-    most_ip.plot(kind='bar', ax=ax, color='skyblue')
-    ax.set_title('Top 10 IPs by Request Count')
-    ax.set_xlabel('IP Address')
-    ax.set_ylabel('Request Count')
+    # 데이터 처리
+    df["Time"] = pd.to_datetime(df["Time"], format="%d/%b/%Y:%H:%M:%S %z", errors="coerce")
+    top_ips = df["IP"].value_counts().head(10)
+    top_requests = df["Request"].value_counts().head(10)
+    top_referrers = df["Referrer"].value_counts().head(10)
+    hourly_requests = df.resample('h', on='Time').size()
+
+    # 그래프 생성
+    ip_graph = generate_graph(top_ips, "Top 10 IP Addresses", "IP", "Count")
+    request_graph = generate_graph(top_requests, "Top 10 Requests", "Request", "Count")
+    referrer_graph = generate_graph(top_referrers, "Top 10 Referrers", "Referrer", "Count")
+    hourly_graph = generate_time_graph(hourly_requests, "Requests Per Hour", "Time", "Count")
+
+    # 그래프를 템플릿으로 전달
+    return render_template(
+        'access.html',
+        ip_graph=ip_graph,
+        request_graph=request_graph,
+        referrer_graph=referrer_graph,
+        hourly_graph=hourly_graph
+    )
+
+def generate_graph(data, title, xlabel, ylabel):
+    """데이터를 기반으로 그래프 생성 및 Base64 변환"""
+    fig, ax = plt.subplots(figsize=(10, 6))
+    data.plot(kind='barh', ax=ax, color='skyblue')
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    plt.gca().invert_yaxis()
+
+    # Base64 변환
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    graph_url = base64.b64encode(buf.getvalue()).decode('utf8')
+    buf.close()
+    plt.close(fig)
+    return f"data:image/png;base64,{graph_url}"
+
+def generate_time_graph(data, title, xlabel, ylabel):
+    """시간 데이터를 기반으로 그래프 생성 및 Base64 변환"""
+    fig, ax = plt.subplots(figsize=(12, 6))
+    data.plot(kind='line', marker='o', ax=ax, color='orange')
+    ax.set_title(title)
+    ax.set_xlabel(xlabel)
+    ax.set_ylabel(ylabel)
+    plt.grid(True)
     plt.tight_layout()
 
-    # 그래프를 메모리에 저장
-    img = BytesIO()
-    plt.savefig(img, format='png')
-    img.seek(0)
-
-    return send_file(img, mimetype='image/png')
+    # Base64 변환
+    buf = io.BytesIO()
+    plt.savefig(buf, format='png')
+    buf.seek(0)
+    graph_url = base64.b64encode(buf.getvalue()).decode('utf8')
+    buf.close()
+    plt.close(fig)
+    return f"data:image/png;base64,{graph_url}"
